@@ -16,7 +16,6 @@ export default function Jobs() {
   const [country, setCountry] = useState(params.get("country") || "");
   const [city, setCity] = useState(params.get("city") || "all");
 
-  // ✅ page from URL
   const [page, setPage] = useState(Number(params.get("page") || 1));
 
   const [categories, setCategories] = useState([]);
@@ -28,7 +27,8 @@ export default function Jobs() {
   const [meta, setMeta] = useState({ current_page: 1, last_page: 1, total: 0 });
   const [loadingJobs, setLoadingJobs] = useState(false);
 
-  // ✅ if filters change, reset to page 1
+  const [apiDebug, setApiDebug] = useState("");
+
   useEffect(() => {
     setPage(1);
   }, [q, category, country, city]);
@@ -39,14 +39,14 @@ export default function Jobs() {
     if (category) obj.category = category;
     if (country) obj.country = country;
     if (city && city !== "all") obj.city = city;
-
-    // ✅ send page to backend
     obj.page = page;
-
     return obj;
   }, [q, category, country, city, page]);
 
   useEffect(() => {
+    // DEBUG: show what Vercel build is using
+    setApiDebug(String(import.meta.env.VITE_API_BASE_URL || "(missing VITE_API_BASE_URL)"));
+
     (async () => {
       const [catRes, countryRes] = await Promise.all([
         api.get("/taxonomies/categories"),
@@ -75,7 +75,6 @@ export default function Jobs() {
     })();
   }, [country]);
 
-  // ✅ keep URL synced (includes page)
   useEffect(() => {
     setParams(queryObj, { replace: true });
   }, [queryObj, setParams]);
@@ -108,6 +107,11 @@ export default function Jobs() {
           <p className="mt-1 text-sm text-gray-600">
             Category-first browsing + country flags + city dropdown
           </p>
+
+          {/* DEBUG LINE (remove later) */}
+          <div className="mt-2 text-xs text-gray-500">
+            API: <span className="font-mono">{apiDebug}</span>
+          </div>
         </div>
 
         <div className="text-sm text-gray-600">
@@ -151,7 +155,6 @@ export default function Jobs() {
               {jobs.map((job, idx) => (
                 <div key={job.id}>
                   <JobCard job={job} />
-
                   {(idx + 1) % 6 === 0 ? (
                     <AdSlot slot={import.meta.env.VITE_ADSENSE_SLOT_JOBS_FEED || ""} />
                   ) : null}
@@ -159,7 +162,6 @@ export default function Jobs() {
               ))}
             </div>
 
-            {/* ✅ pagination here (professional placement) */}
             <Pagination meta={meta} onPageChange={onPageChange} />
 
             <AdSlot slot={import.meta.env.VITE_ADSENSE_SLOT_JOBS_BOTTOM || ""} />
