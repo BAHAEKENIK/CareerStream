@@ -472,7 +472,5 @@ class TaxonomySeeder extends Seeder
                 ]
             );
         }
-
-        $this->command->info('✅ Successfully seeded 20 real jobs (excluding Morocco) with countries and categories!');
     }
 }
