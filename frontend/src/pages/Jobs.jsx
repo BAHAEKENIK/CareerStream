@@ -109,9 +109,6 @@ export default function Jobs() {
           </p>
 
           {/* DEBUG LINE (remove later) */}
-          <div className="mt-2 text-xs text-gray-500">
-            API: <span className="font-mono">{apiDebug}</span>
-          </div>
         </div>
 
         <div className="text-sm text-gray-600">
